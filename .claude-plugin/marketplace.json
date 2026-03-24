@@ -1,0 +1,21 @@
+{
+  "name": "bob",
+  "owner": {
+    "name": "kleer001"
+  },
+  "metadata": {
+    "description": "Build Our Breadcrumbs — session handoff for Claude Code",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "bob",
+      "description": "Session handoff skill — compress context into BREADCRUMB.md so future sessions pick up exactly where you left off",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./"
+      ]
+    }
+  ]
+}
