@@ -115,7 +115,7 @@ Triggered when the user calls `/bob` without `--go` or `--wait`.
    empty `## Todos` section. There is always something useful to capture.
 7. Set line 1 to `fresh`.
 8. Write the absolute current project path (`pwd`) as the last line.
-9. **Do not ask the user any questions.** Compress and write silently. Then exit.
+9. **Do not ask the user any questions.** Compress and write silently. Then output exactly one line: `Type /exit to close the session.` and stop.
 
 ### Write behavior (ADD — fresh file exists):
 
@@ -131,7 +131,7 @@ Triggered when the user calls `/bob` without `--go` or `--wait`.
 5. Update `## Next Step` if a clearer next action has emerged.
 6. Update `## Summary` if the scope has meaningfully changed.
 7. Keep line 1 as `fresh`. Do not change it.
-8. **Do not ask the user any questions.** Then exit.
+8. **Do not ask the user any questions.** Then output exactly one line: `Type /exit to close the session.` and stop.
 
 ### After writing (both CREATE and ADD) and before exiting:
 
@@ -143,9 +143,9 @@ Triggered when the user calls `/bob` without `--go` or `--wait`.
   BREADCRUMB.md
   ```
   This check is stateless: just grep `.gitignore` for the filename. No tracking needed.
-- Unless `--stay` is set, **exit the session** (equivalent to `/exit`). `/bob` is the
-  command a user runs when they're done — closing the laptop, stepping away. Be silent
-  and fast.
+- Unless `--stay` is set, output exactly one line: `Type /exit to close the session.`
+  then stop responding entirely. Do not add commentary, summaries, or follow-up messages.
+  `/bob` is the command a user runs when they're done — closing the laptop, stepping away.
 - Unless `--dry-run` is set, actually write the file. See the flags section below.
 
 ---
@@ -292,8 +292,8 @@ The breadcrumb still serves as a snapshot of project state.
   Do your best with what you have, write the file, get out.
 - **Use friendly language on load.** "Picking up where you left off" — not "loading fresh
   breadcrumb file with autostart flag."
-- **Exit is real.** When write mode completes (without `--stay`), exit the session the
-  same way `/exit` does. Do not continue with follow-up messages.
+- **Stop after writing.** When write mode completes (without `--stay`), output
+  `Type /exit to close the session.` and stop. Do not continue with follow-up messages.
 - **Compression over completeness.** The breadcrumb should be dense and useful, not a
   transcript. Future Claude needs the *decisions*, not the deliberation.
 - **Deduplicate aggressively in add mode.** Don't let the file bloat. Re-summarize
