@@ -1,0 +1,2 @@
+Recommnended order of operations: 1. Ship the repo and Medium post 2. Submit a PR to hesreallyhim/awesome-claude-code - highest traffic 3. Submit to travisvn/awes ome- claude-skills 4. Add a JSON entry to majiayu000/
+claude-skill-registry 5. Submit to skillsdirectory. com for the quality badge 6. SkillsMP will likely pick it up automatically once you have stars
