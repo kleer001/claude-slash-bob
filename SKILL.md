@@ -8,7 +8,7 @@ description: >
   trigger when the user mentions "breadcrumbs", "session handoff", "pick up where I
   left off", "save my progress", or "resume previous work". /bob with no flags always
   writes and exits. /bob --go or /bob --wait always loads.
-allowed-tools: Read, Write, Glob, Grep, Bash, Task
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task
 argument-hint: "[--stay] [--force] [--dry-run] [--clear] [--go] [--wait]"
 ---
 
