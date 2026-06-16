@@ -36,7 +36,7 @@ tests/test_main.py
 **Key behavioral contract in SKILL.md:**
 - Two non-overlapping modes: **Write** (`/bob` with no load flags) and **Load** (`/bob --go` or `--wait`)
 - `BREADCRUMB.md` always has `fresh`/`stale` as line 1, and absolute project path as the last line
-- Todo numbering never reuses `#N` identifiers — completed items keep their numbers in `## Done`
+- Todo numbering never reuses `#N` identifiers — completed todos are erased unless an incomplete todo still references them via `(needs: #N)`, in which case they wait in `## Done` until the last live dependent finishes
 - Write mode never asks questions; it compresses and exits silently
 
 ## CI

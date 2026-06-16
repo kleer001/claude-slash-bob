@@ -48,11 +48,9 @@ fresh                ← Line 1: session state flag (fresh | stale)
 
 ### Parallel
 - [ ] #1 Update README
-- [ ] #2 Add unit tests for auth module
 
 ### Sequential
-- [ ] #3 (needs: #2) Run full test suite
-- [ ] #4 (needs: #3) Deploy to staging
+- [ ] #4 (needs: #2) Deploy to staging
 
 ## Context
 [Key decisions, file paths, research web links, constraints, gotchas, relevant snippets.
@@ -62,7 +60,7 @@ Include the *why* behind dependencies here — reasoning that doesn't fit in a m
 [The single most important thing to do when resuming]
 
 ## Done
-- [x] #0 Completed todo item (keeps its original number forever)
+- [x] #2 Add unit tests for auth module   ← kept only because live #4 still (needs: #2)
 
 /absolute/path/to/project   ← Last line: absolute project path
 ```
@@ -74,8 +72,14 @@ Include the *why* behind dependencies here — reasoning that doesn't fit in a m
 - **Section headers** (`## Summary`, `## Todos`, etc.) are recommended but flexible. Use
   judgment on what's worth capturing. The goal is a useful handoff, not bureaucratic compliance.
 - **Todo numbers** (`#1`, `#2`, etc.) always increment. Never reuse a number, even if the
-  original item was completed or removed. Completed items keep their numbers when moved to
-  `## Done` so that `(needs: #N)` references remain valid across the file's lifetime.
+  original item was completed or erased — so any surviving `(needs: #N)` reference stays
+  unambiguous.
+- **Completed todos are erased, not archived.** The breadcrumb is working memory, not a
+  history log. When a todo completes, erase it — *unless* an incomplete todo still
+  references it via `(needs: #N)`. Keep a completed item in `## Done` only while a live
+  dependent still points at it; when the last live dependent finishes, erase it too. A file
+  whose work is all finished and unreferenced drains to empty todo sections. `## Done` is a
+  small holding area for still-needed anchors, never a growing archive.
 
 ---
 
@@ -105,9 +109,12 @@ Triggered when the user calls `/bob` without `--go` or `--wait`.
 2. Survey all open work from the session — write each item as a todo in `## Todos`,
    grouped under `### Parallel` and `### Sequential` with `(needs: #N)` markers and
    incrementing `#N` numbers.
-3. Survey completed work from the session — record in `## Done` with original numbers.
+3. Survey completed work from the session — record an item in `## Done` (with its original
+   number) *only* if an incomplete todo references it via `(needs: #N)`. Erase every other
+   completed item; do not record it.
 4. Capture key decisions, file paths, research web links, constraints, and dependency
-   reasoning in `## Context`.
+   reasoning in `## Context`, and the single most critical next action in `## Next Step`.
+   Capture only what's still relevant — leave out anything already resolved or obsolete.
 5. Identify the single most critical next action for `## Next Step`. This is a pointer
    into the todo list — the "start here" item, not the only item.
 6. If the session has minimal context (e.g., user called `/bob` immediately), write a
@@ -123,15 +130,19 @@ Triggered when the user calls `/bob` without `--go` or `--wait`.
 2. Identify new todos from the conversation not already in the file — add them with
    new incremented `#N` numbers. Place them under the appropriate `### Parallel` or
    `### Sequential` sub-header based on their dependency characteristics.
-3. Identify newly completed todos — move them to `## Done`, preserving their original
-   `#N` number.
-4. Merge new context into `## Context` — including any new key decisions, file paths,
-   research web links, constraints, and dependency reasoning. Compress and deduplicate —
-   do not blindly append. Re-summarize if the section is getting long.
-5. Update `## Next Step` if a clearer next action has emerged.
-6. Update `## Summary` if the scope has meaningfully changed.
-7. Keep line 1 as `fresh`. Do not change it.
-8. **Do not ask the user any questions.** Then output exactly one line: `Type /exit to close the session.` and stop.
+3. Identify newly completed todos. Erase each one — *unless* an incomplete todo still
+   references it via `(needs: #N)`, in which case move it to `## Done` (preserving its
+   original `#N`) as an anchor for that reference.
+4. Sweep `## Done` and erase any entry whose last live dependent has now completed —
+   once nothing incomplete references it, the anchor is dead weight.
+5. Merge new context into `## Context` — new key decisions, file paths, research web links,
+   constraints, and dependency reasoning. Compress and deduplicate; do not blindly append.
+   **Prune** anything now resolved or obsolete — don't just accumulate. Re-summarize if the
+   section is getting long.
+6. Update `## Next Step` if a clearer next action has emerged; drop a step that's already done.
+7. Update `## Summary` if the scope has meaningfully changed.
+8. Keep line 1 as `fresh`. Do not change it.
+9. **Do not ask the user any questions.** Then output exactly one line: `Type /exit to close the session.` and stop.
 
 ### After writing (both CREATE and ADD) and before exiting:
 
@@ -206,7 +217,8 @@ Execution strategy:
 - **Parallel todos**: Dispatch these as concurrent sub-agents using the Task tool. They
   have no dependencies on each other and can run simultaneously.
 - **Sequential todos**: Execute in dependency order. A todo with `(needs: #3)` waits
-  until `#3` is complete.
+  until `#3` is complete. As todos finish, apply the prune rule: erase each completed todo
+  unless an incomplete one still references it, so `## Done` only ever holds live anchors.
 - **Blocked todos**: If a todo cannot proceed (missing information, requires a decision,
   external dependency), surface the blocker to the user immediately. Do not silently skip it.
   Do not continue past it if downstream todos depend on it.
@@ -296,6 +308,10 @@ The breadcrumb still serves as a snapshot of project state.
   `Type /exit to close the session.` and stop. Do not continue with follow-up messages.
 - **Compression over completeness.** The breadcrumb should be dense and useful, not a
   transcript. Future Claude needs the *decisions*, not the deliberation.
+- **Working memory, not an archive.** The breadcrumb is a scratch pad — put things in
+  temporarily, erase what's no longer needed. Every write pass prunes: erase completed
+  todos (keeping only those a live `(needs: #N)` still anchors), and drop resolved or
+  obsolete `## Context` / `## Next Step` content. Don't let `## Done` grow into a history log.
 - **Deduplicate aggressively in add mode.** Don't let the file bloat. Re-summarize
   context on each add pass. Merge, don't append.
 - **Clean up when done.** When all todos from a `--go` session are complete, notify the
